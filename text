@@ -1,0 +1,24 @@
+flowchart LR
+    A{Kafka\n consumer}-->|event|B[Expired or \n Deleted]
+    B-->|session|C[End]
+    A-->|event|D(committed)
+    D-->|check|E{Hash value}
+    E-->|equal|F(Skip)
+    E-->|not equal|G{Client}
+    G-->|old|H{MAC}
+    H-->|check|I(New committed)
+    I-->|delete|J(Invalidated)
+    J-->|session|K(end)
+    G-->|new|L(Session)
+    L-->|start|M{Option60}
+    M-.->N(No)
+    N-->O(Mac address)
+    O-.->|CID|P(Option60)
+    M-.->Q(Yes)
+    Q-.->|CID|P
+    P-->|api call|R(Bandwidth)
+    R-->|api call|S(Service type)
+    S-->|data|T(Binder)
+    H-->|check|U(Old committed)
+    U-.->|CID|P
+
